@@ -26,6 +26,11 @@ jobs:
       run: python3 -m pip install -r requirements.txt
 
     - name: Run bot
+      timeout-minutes: 350 # Run for nearly 6 hours before the next scheduled restart
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      run: python3 bot.py
+      run: |
+        while true; do
+          python3 bot.py || echo "Bot crashed with exit code $?. Restarting..."
+          sleep 5
+        done
