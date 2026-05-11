@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
   schedule:
     # Run every 5 hours to keep the bot alive
     - cron: '0 */5 * * *'
