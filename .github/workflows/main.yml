@@ -1,0 +1,30 @@
+name: Telegram Bot CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Run every 5 hours to keep the bot alive
+    - cron: '0 */5 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run bot
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      run: python bot.py
