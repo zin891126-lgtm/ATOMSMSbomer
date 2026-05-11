@@ -511,8 +511,16 @@ async def list_proxies_placeholder(message: Message):
     await message.answer("This feature is not yet implemented.")
 
 async def main() -> None:
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    except Exception as e:
+        logging.critical(f"Critical error in bot execution: {e}", exc_info=True)
 
 if __name__ == "__main__":
-    logging.info("Starting bot")
-    asyncio.run(main())
+    logging.info("Starting bot process")
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logging.info("Bot stopped by user")
+    except Exception as e:
+        logging.critical(f"Bot process crashed: {e}", exc_info=True)
